@@ -1,5 +1,6 @@
 ; Snake
 
+jmp InicioDoJogo   ; primeira instrução do programa
 
 SnakePos:  	var #500 ; tamanho MAXIMO da snake
 SnakeSize:	var #1
@@ -12,10 +13,20 @@ Stage: var #1
 Speed: var #1
 FlagTiro: var #1
 posAtualTiro	: var #1
-posAntTiro	: var #1
+posAntTiro	: var #1                                                     
 
-StartTitle:      string "   SNAKE GAME   "
-StartInstruction:string "Pressione ESPACO para iniciar"
+TelaInicio1:      string "----------------------------------------"
+TelaInicio2:      string "|         ZONA DA COBRA                |"
+TelaInicio3:      string "----------------------------------------"
+TelaInicio4:      string "|            BSI 025                   |"
+TelaInicio5:      string "|                                      |"
+TelaInicio6:      string "|  DEVs: Isabela Xavier                |"
+TelaInicio7:      string "|        Juan Jacomassi                |"
+TelaInicio8:      string "|        Rebeca de Oliveira            |"
+TelaInicio9:      string "|                                      |"
+TelaInicio10:     string "----------------------------------------"
+TelaInicio11:     string "                                        "
+StartInstruction:	string "    Pressione ESPACO para iniciar     "
 
 GameOverMessage: 	string " FIM DE JOGO "
 EraseGameOver:		string "           "
@@ -27,12 +38,13 @@ EraseSuccessMessage: 	string "                 "
 NextLevelMessage: 		string " Pressione ESPACO "
 EraseNextLevelMessage:	string "                               "
 
+InicioDoJogo:
+    call Tela_Inicial  
+    jmp main
 
 ; Main
 main:
-	
-;	call Tela_Inicial                            ; Mostra a tela inicial  REMOVER PARA RODAR!
-	
+
 	call inicialize_speed                        ; Define a velocidade inicial 
 	call inicialize_flag_e_tiro                  ; Controla flag
 	call Initialize                              ; Setup inicial do jogo
@@ -188,6 +200,89 @@ Initialize:
 		pop r0
 		
 		rts
+
+Tela_Inicial:
+    push r0
+    push r1
+    push r2
+    push r3
+
+    ; Cor branca
+    loadn r2, #256
+
+    ; === IMPRIME O TÍTULO ===
+    loadn r0, #400                  
+    loadn r1, #TelaInicio1
+    call ImprimeStr
+    
+    loadn r0, #440                 
+    loadn r1, #TelaInicio2
+    call ImprimeStr
+    
+    loadn r0, #480                 
+    loadn r1, #TelaInicio3
+    call ImprimeStr
+    
+    loadn r0, #520                
+    loadn r1, #TelaInicio4
+    call ImprimeStr
+    
+              
+    loadn r0, #560                
+    loadn r1, #TelaInicio5
+    call ImprimeStr
+    
+    loadn r0, #600                 
+    loadn r1, #TelaInicio6
+    call ImprimeStr
+    
+    loadn r0, #640                
+    loadn r1, #TelaInicio7
+    call ImprimeStr
+    
+    loadn r0, #680                 
+    loadn r1, #TelaInicio8
+    call ImprimeStr
+    
+    loadn r0, #720                 
+    loadn r1, #TelaInicio9
+    call ImprimeStr
+   
+    loadn r0, #760                
+    loadn r1, #TelaInicio10
+    call ImprimeStr
+    
+    loadn r0, #800             
+    loadn r1, #TelaInicio11
+    call ImprimeStr
+
+    loadn r0, #920
+    loadn r1, #StartInstruction
+    call ImprimeStr
+
+; === ESPERAR TECLA ESPAÇO ===
+Espera_Espaco:
+    inchar r3
+    loadn r4, #32       ; ASCII do espaço
+    cmp r3, r4
+    jne Espera_Espaco
+
+; === LIMPA A TELA ===
+    loadn r0, #0
+LimpaTela:
+    loadn r1, #' '
+    outchar r1, r0
+    inc r0
+    loadn r3, #1200
+    cmp r0, r3
+    jne LimpaTela
+
+    pop r3
+    pop r2
+    pop r1
+    pop r0
+    rts
+
 
 FirstPrintSnake:                                        ; Desenha a cobra inicial e a comida
 	push r0
