@@ -10,15 +10,12 @@ FoodPos:	var #1
 FoodStatus:	var #1
 Score: var #1
 Stage: var #1
-Speed: var #1
-FlagTiro: var #1
-posAtualTiro	: var #1
-posAntTiro	: var #1                                                     
+Speed: var #1                                                    
 
 TelaInicio1:      string "----------------------------------------"
-TelaInicio2:      string "|         ZONA DA COBRA                |"
+TelaInicio2:      string "|            ZONA DA COBRA             |"
 TelaInicio3:      string "----------------------------------------"
-TelaInicio4:      string "|            BSI 025                   |"
+TelaInicio4:      string "|                BSI 025               |"
 TelaInicio5:      string "|                                      |"
 TelaInicio6:      string "|  DEVs: Isabela Xavier                |"
 TelaInicio7:      string "|        Juan Jacomassi                |"
@@ -33,10 +30,10 @@ EraseGameOver:		string "           "
 RestartMessage:		string " Pressione ESPACO para jogar "
 EraseRestart:		string "                          "
 
-SuccessMessage: 		string " FASE CONCLUIDA "
-EraseSuccessMessage: 	string "                 "
-NextLevelMessage: 		string " Pressione ESPACO "
-EraseNextLevelMessage:	string "                               "
+SuccessMessage: 		string "       FASE CONCLUIDA        "
+EraseSuccessMessage: 	string "                             "
+NextLevelMessage: 		string "        Pressione ESPACO     "
+EraseNextLevelMessage:	string "                                  "
 
 InicioDoJogo:
     call Tela_Inicial  
@@ -46,7 +43,6 @@ InicioDoJogo:
 main:
 
 	call inicialize_speed                        ; Define a velocidade inicial 
-	call inicialize_flag_e_tiro                  ; Controla flag
 	call Initialize                              ; Setup inicial do jogo
 	
 	
@@ -109,7 +105,6 @@ stage_checker:
 	
 	stage2:
 	call Dead_Snake_2
-	call Torre
 	
 	fim:
 	rts	
@@ -140,25 +135,12 @@ inicialize_stage_number:
 
 inicialize_speed:
 	
-	loadn r0, #10000  ; altera a velocidade
+	loadn r0, #20000  ; altera a velocidade
 	store Speed, r0
 		 
 	rts
 
-inicialize_flag_e_tiro:
-	
-	loadn r0, #0
-	store FlagTiro, r0
-		
-	loadn r1, #1019
-	store posAtualTiro, r1
-		
-	loadn r2, #1059
-	store posAntTiro, r2
-				
-						 
-	rts	
-	
+					
 Initialize:
 		push r0
 		push r1
@@ -207,10 +189,9 @@ Tela_Inicial:
     push r2
     push r3
 
-    ; Cor branca
-    loadn r2, #256
+    loadn r2, #1280                    ; Cor Rosa
 
-    ; === IMPRIME O TÍTULO ===
+    ; Imprime tela inicial
     loadn r0, #400                  
     loadn r1, #TelaInicio1
     call ImprimeStr
@@ -260,14 +241,14 @@ Tela_Inicial:
     loadn r1, #StartInstruction
     call ImprimeStr
 
-; === ESPERAR TECLA ESPAÇO ===
+; Espera teclar espaço
 Espera_Espaco:
     inchar r3
-    loadn r4, #32       ; ASCII do espaço
+    loadn r4, #32      
     cmp r3, r4
     jne Espera_Espaco
 
-; === LIMPA A TELA ===
+; Limpa tela
     loadn r0, #0
 LimpaTela:
     loadn r1, #' '
@@ -593,173 +574,6 @@ Move_Snake:
 		pop r0
 
 	rts
-
-Torre:
-	
-	push r1
-	push r2
-	
-	loadn r1, #0
-	loadn r2, #1
-		
-	tiro:		
-		
-		call MoveTiro
-		inc r1
-		
-		cmp r1, r2
-		jne tiro
-		
-	fim_tiro:
-		pop r2
-		pop r1
-		
-	rts
-
-
-	
-;--------------------------------------------------------------------------------------------------------
-; espaço para movimentação  do tiro
-MoveTiro:
-	
-	call MoveTiro_RecalculaPos
-	call Shot_snake ; para cada vez que o tiro for processado, são feitas verificações para analisar se a snake foi atingida
-	call MoveTiro_Apaga
-	call Shot_snake
-	call MoveTiro_Desenha		
-	call Shot_snake
-	  
-	rts
-
-;--------------------------------------------------------------------------------------------------------
-MoveTiro_Apaga:
-	push R0
-	push R1
-	push R2
-	push R3
-	push R4
-
-	load R1, posAtualTiro	
-	loadn R2, #40
-	sub R1, R1, R2	
-	
-	load R3, posAtualTiro
-	store posAntTiro, R3
-	store posAtualTiro, R1 
-	
-	loadn R4, #' '
-	
-  MoveTiro_Apaga_Fim:	
-	outchar R4, R3	
-	
-	
-	pop R4
-	pop R3
-	pop R2
-	pop R1
-	pop R0
-	rts
-;--------------------------------------------------------------------------------------------------------
-	
-	
-MoveTiro_RecalculaPos:
-	push R0
-	push R1
-	push R2
-	
-	load R0, posAtualTiro	
-	
-	loadn R1, #139		
-	cmp R0, R1
-	jeq MoveTiro_RecalculaPos_Fim
-	
-	loadn R1, #SnakePos
-	loadn R0, #posAtualTiro	
-	
-	cmp R0, R1	
-	jeq MoveTiro_RecalculaPos_Boom
-	
-	call MoveTiro_Apaga
-	
-	jmp MoveTiro_RecalculaPos_Fim2
-	
-  MoveTiro_RecalculaPos_Fim:
-  	loadn R1, #'x'
-  	loadn R2, #256
-  	add R1, R1, R2
-  	outchar R1, R0
-  	call inicialize_flag_e_tiro
-  	call MoveTiro_Apaga
-  	
-  MoveTiro_RecalculaPos_Fim2:	
-	pop R2
-	pop R1
-	pop R0
-	rts
-	
-  MoveTiro_RecalculaPos_Boom:	
-  	
-  	pop R2
-	pop R1
-	pop R0
-  	jmp GameOver_Activate
-  
-
-  
-MoveTiro_Desenha:
-	push R0
-	push R1
-	
-	loadn R1, #'|'	; Forma do Tiro
-	load R0, posAtualTiro
-	outchar R1, R0
-	store posAntTiro, R0
-	
-	pop R1
-	pop R0
-	rts
-
-
-Shot_snake:
-
-	push r0
-	push r1
-	push r2
-	push r3
-	push r4
-	push r5
-	
-	loadn 	r0, #SnakePos
-	loadn 	r1, #SnakePos
-	load 	r2, SnakeSize
-	load 	r5, posAtualTiro
-	
-	add 	r0, r0, r2		; r0 = SnakePos[Size]
-
-	loadn 	r4, #0
-	
-	Shot_Loop:
-		loadi 	r3, r0
-				
-		dec r0
-		
-		cmp r3, r5
-		jeq GameOver_Activate
-		
-		cmp r2, r4
-		dec r2
-		
-		jne Shot_Loop	
-
-	pop r5
-	pop r4
-	pop r3
-	pop r2
-	pop r1
-	pop r0
-
-	rts
-
 	
 
 Increment_score:
@@ -1055,52 +869,65 @@ Dead_Snake_2: ; função para a fase 3
 	cmp r1, r2
 	jgr GameOver_Activate
 	
-	call turret_check ;verifica se a snake trombou com a torreta que atira
-	
-	
+	call turret_check ; verifica colisão com torreta (se ainda existir)
+
+	; ============================================================
+	; *** COLISÃO COM OBSTÁCULOS DESENHADOS NA TELA ( '# ' ) ***
+	; ============================================================
+	; r1 já contém a posição linear da cabeça da cobra
+
+	loadi r5, r1       ; pega o caractere desenhado na tela
+	loadn r6, #'#'     ; caractere que representa obstáculo
+	cmp r5, r6
+	jeq GameOver_Activate
+
+
+	; ============================================================
 	; Trombou na própria cobra
-	Collision_Check:
-		load 	r2, SnakeSize
-		loadn 	r3, #1
-		loadi 	r4, r0			; Posição da cabeça
-		
-		Collision_Loop:
-			inc 	r0
-			loadi 	r1, r0
-			cmp r1, r4
-			jeq GameOver_Activate
-			
-			dec r2
-			cmp r2, r3
-			jne Collision_Loop
-		
+	; ============================================================
+
+Collision_Check:
+	load 	r2, SnakeSize
+	loadn 	r3, #1
+	loadi 	r4, r0			; r4 = posição da cabeça
+	
+Collision_Loop:
+	inc 	r0
+	loadi 	r1, r0
+	cmp r1, r4
+	jeq GameOver_Activate
+	
+	dec r2
+	cmp r2, r3
+	jne Collision_Loop
 	
 	jmp Dead_Snake_2_End
 	
 	
+; ============================================================
+; GAME OVER
+; ============================================================
+GameOver_Activate:
+	load 	r0, FoodPos
+	loadn 	r1, #' '
+	outchar r1, r0
 	
+	loadn r0, #615
+	loadn r1, #GameOverMessage
+	loadn r2, #0
+	call Imprime
 	
+	loadn r0, #687
+	loadn r1, #RestartMessage
+	loadn r2, #0
+	call Imprime
 	
-	GameOver_Activate:
-		load 	r0, FoodPos
-		loadn 	r1, #' '
-		outchar r1, r0
-	
-		loadn r0, #615
-		loadn r1, #GameOverMessage
-		loadn r2, #0
-		call Imprime
-		
-		loadn r0, #687
-		loadn r1, #RestartMessage
-		loadn r2, #0
-		call Imprime
-		
-		jmp GameOver_loop
-	
-	Dead_Snake_2_End:
-	
+	jmp GameOver_loop
+
+
+Dead_Snake_2_End:
 	rts
+
 
 
 box_1_check: ; checa se a snake colidiu com uma das caixas do cenario 1. 
@@ -1225,7 +1052,7 @@ box_2_check:
 	
 	rts
 
-turret_check:
+turret_check:               ;ACHO QUE PRECISA DELETAR AQUI!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 	loadn r2, #1059
 	cmp r1, r2
@@ -1460,7 +1287,7 @@ Draw_new_stage:
 	
 	draw_stage2:
 		loadn R1, #tela2Linha0	; Endereco onde comeca a primeira linha do cenario!!
-		loadn R2, #1024
+		loadn R2, #1280
 		call Draw_Stage
 		
 		outchar r3, r4 ; imprime o 1 em ascII  na posição 49 da tela
@@ -1613,63 +1440,61 @@ tela1Linha29 : string "----------------------------------------"
 tela2Linha0  : string "PONTOS =                                "
 tela2Linha1  : string "NIVEL =                                 "
 tela2Linha2  : string "                                        "
-tela2Linha3  : string "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-tela2Linha4  : string "x                                      x"
-tela2Linha5  : string "x                                      x"
-tela2Linha6  : string "x                                      x"
-tela2Linha7  : string "x                                      x"
-tela2Linha8  : string "x                                      x"
-tela2Linha9  : string "x                                      x"
-tela2Linha10 : string "x      xxxxxx                          x"
-tela2Linha11 : string "x      x    x                          x"
-tela2Linha12 : string "x      xxxxxx                          x"
-tela2Linha13 : string "x                                      x"
-tela2Linha14 : string "x                                      x"
-tela2Linha15 : string "x                                      x"
-tela2Linha16 : string "x                                      x"
-tela2Linha17 : string "x                                      x"
-tela2Linha18 : string "x                                      x"
-tela2Linha19 : string "x                                      x"
-tela2Linha20 : string "x                                      x"
-tela2Linha21 : string "x                                      x"
-tela2Linha22 : string "x                     xxxxxx           x"
-tela2Linha23 : string "x                     x    x           x"
-tela2Linha24 : string "x                     xxxxxx           x"
-tela2Linha25 : string "x                                      x"
-tela2Linha26 : string "x                                      x"
-tela2Linha27 : string "x                                      x"
-tela2Linha28 : string "x                                      x"
-tela2Linha29 : string "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"	
+tela2Linha3  : string "----------------------------------------"
+tela2Linha4  : string "-                                      -"
+tela2Linha5  : string "-                                      -"
+tela2Linha6  : string "-                                      -"
+tela2Linha7  : string "-                                      -"
+tela2Linha8  : string "-                                      -"
+tela2Linha9  : string "-                                      -"
+tela2Linha10 : string "-      xxxxxx                          -"
+tela2Linha11 : string "-      x    x                          -"
+tela2Linha12 : string "-      xxxxxx                          -"
+tela2Linha13 : string "-                                      -"
+tela2Linha14 : string "-                                      -"
+tela2Linha15 : string "-                                      -"
+tela2Linha16 : string "-                                      -"
+tela2Linha17 : string "-                                      -"
+tela2Linha18 : string "-                                      -"
+tela2Linha19 : string "-                                      -"
+tela2Linha20 : string "-                                      -"
+tela2Linha21 : string "-                                      -"
+tela2Linha22 : string "-                     xxxxxx           -"
+tela2Linha23 : string "-                     x    x           -"
+tela2Linha24 : string "-                     xxxxxx           -"
+tela2Linha25 : string "-                                      -"
+tela2Linha26 : string "-                                      -"
+tela2Linha27 : string "-                                      -"
+tela2Linha28 : string "-                                      -"
+tela2Linha29 : string "----------------------------------------"	
 
-tela3Linha0  : string "SCORE ==                                "
-tela3Linha1  : string "STAGE ==                                "
+tela3Linha0  : string "PONTOS =                                "
+tela3Linha1  : string "NIVEL =                                "
 tela3Linha2  : string "                                        "
-tela3Linha3  : string "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-tela3Linha4  : string "x                                      x"
-tela3Linha5  : string "x                                      x"
-tela3Linha6  : string "x                                      x"
-tela3Linha7  : string "x                                      x"
-tela3Linha8  : string "x                                      x"
-tela3Linha9  : string "x                                      x"
-tela3Linha10 : string "x                                      x"
-tela3Linha11 : string "x                                      x"
-tela3Linha12 : string "x                                      x"
-tela3Linha13 : string "x                                      x"
-tela3Linha14 : string "x                                      x"
-tela3Linha15 : string "x                                      x"
-tela3Linha16 : string "x                                      x"
-tela3Linha17 : string "x                                      x"
-tela3Linha18 : string "x                                      x"
-tela3Linha19 : string "x                                      x"
-tela3Linha20 : string "x                                      x"
-tela3Linha21 : string "x                                      x"
-tela3Linha22 : string "x                                      x"
-tela3Linha23 : string "x                                      x"
-tela3Linha24 : string "x                                      x"
-tela3Linha25 : string "x                                      x"
-tela3Linha26 : string "x                  !                   x"
-tela3Linha27 : string "x                 <|>                  x"
-tela3Linha28 : string "x                #####                 x"
-tela3Linha29 : string "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"	
-
-	
+tela3Linha3  : string "----------------------------------------"
+tela3Linha4  : string "- ##########                           -"
+tela3Linha5  : string "- ##########                           -"
+tela3Linha6  : string "- ##########                           -"
+tela3Linha7  : string "-                                      -"
+tela3Linha8  : string "-                                      -"
+tela3Linha9  : string "-            #######                   -"
+tela3Linha10 : string "-            #######                   -"
+tela3Linha11 : string "-            #######                   -"
+tela3Linha12 : string "-            #######                   -"
+tela3Linha13 : string "-                                      -"
+tela3Linha14 : string "-                                      -"
+tela3Linha15 : string "-                               ####   -"
+tela3Linha16 : string "-                               ####   -"
+tela3Linha17 : string "-                               ####   -"
+tela3Linha18 : string "-                               ####   -"
+tela3Linha19 : string "-                                      -"
+tela3Linha20 : string "-                                      -"
+tela3Linha21 : string "-                                      -"
+tela3Linha22 : string "-                                      -"
+tela3Linha23 : string "-                                      -"
+tela3Linha24 : string "-                                      -"
+tela3Linha25 : string "-                                      -"
+tela3Linha26 : string "-                                      -"
+tela3Linha27 : string "-                                      -"
+tela3Linha28 : string "-                                      -"
+tela3Linha29 : string "----------------------------------------"
