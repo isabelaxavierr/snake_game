@@ -1,5 +1,5 @@
 # 🐍 **ZONA DA COBRA**
-### Jogo desenvolvido em Assembly para o simulador da disciplina **SSC0513 – Organização e Arquitetura de Computadores**
+### Jogo desenvolvido em Assembly para a disciplina **SSC0513 – Organização e Arquitetura de Computadores**
 
 ---
 
