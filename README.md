@@ -68,3 +68,9 @@ Para executar o jogo, você precisará:
   - o próprio corpo  
   - **tiros da torreta (fase 3)**  
 - Atingir a pontuação necessária para avançar de fase
+
+---
+
+## 📸 **Gameplay do Jogo**
+
+Vídeo mostrando o jogo funcionando, de maneira que todas as diferentes telas apareçam (início, três níveis, game over e winner): https://youtu.be/4tTatMAQS9Y
