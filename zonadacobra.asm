@@ -1,7 +1,7 @@
 ; ZONA DA COBRA 
-; ISABELA XAVIER AURELIANO - NUSP: 16873946
-; JUAN JACOMASSI - NUSP: 16878037
-; REBECA DE OLIVEIRA - NUSP: 11963923
+; ISABELA XAVIER AURELIANO
+; JUAN JACOMASSI
+; REBECA DE OLIVEIRA 
 
 
 SnakePos:  	var #500 ; tamanho MAXIMO da cobra -> Array para posições da cobra
@@ -1295,7 +1295,6 @@ Morte_Snake_3: ; função para a fase 3
 	Morte_Snake_3_End:
 	
 	rts
-; ################################################################################################################################################################################# PESSOA 2 ATÉ AQUI
 
 box_1_check: ; checa se a snake colidiu com uma das caixas do cenario 1. 
 	
